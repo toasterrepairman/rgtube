@@ -50,6 +50,7 @@
                 <property name="margin-end">5</property>
                 <property name="margin-top">5</property>
                 <property name="margin-bottom">5</property>
+                <signal name="activate" handler="download_video" swapped="no"/>
               </object>
               <packing>
                 <property name="left-attach">3</property>
@@ -132,7 +133,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTextView">
+          <object class="GtkTextView" id="console">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="margin-start">5</property>

@@ -11,6 +11,9 @@ extern crate gio;
 use gtk::prelude::*;
 use gio::prelude::*;
 use std::io::BufReader;
+use ytd_rs::{YoutubeDL, ResultType, Arg};
+use std::path::PathBuf;
+use std::error::Error;
 
 fn main() {
 
@@ -47,10 +50,19 @@ fn main() {
 }
 
 async fn download_video(link: &str) -> String {
-    let download_path: String = rustube::download_best_quality(&link).await
-        .unwrap()
-        .as_path()
-        .display()
-        .to_string();
-    return download_path;
+    let args = vec![Arg::new("--quiet"), Arg::new_with_arg("--output", "%(title).90s.%(ext)s")];
+    let path = PathBuf::from("~/Downloads/");
+    let ytd = YoutubeDL::new(&path, args, link)
+        .expect("you borked it dummy");
+
+    // start download
+    let download = ytd.download();
+
+    // check what the result is and print out the path to the download or the error
+    match download.result_type() {
+        ResultType::SUCCESS => println!("Your download: {}", download.output_dir().to_string_lossy()),
+        ResultType::IOERROR | ResultType::FAILURE =>
+                println!("Couldn't start download: {}", download.output()),
+    };
+    return ("we did it :)").to_string();
 }
