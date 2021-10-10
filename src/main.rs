@@ -9,16 +9,12 @@ extern crate gtk;
 extern crate gio;
 
 use gtk::prelude::*;
-use gio::prelude::*;
-use std::io::BufReader;
 use ytd_rs::{YoutubeDL, ResultType, Arg};
 use std::path::PathBuf;
-use std::error::Error;
 use futures::prelude::*;
 use tokio::*;
 use std::{thread};
 use glib::{clone, MainContext};
-
 
 #[tokio::main]
 async fn main() {
@@ -47,8 +43,10 @@ fn build_ui() {
 */
 
     input.connect_activate(clone!(@strong input => move |_| {
+        input.set_sensitive(false);
         let link = input.get_text().to_string();
-        download_video(&link);
+        download_video(link);
+        input.set_sensitive(true)
     }));
 
 
@@ -63,20 +61,20 @@ fn build_ui() {
     gtk::main();
 }
 
-async fn download_video(link: &str) -> String {
-    let args = vec![Arg::new("--quiet"), Arg::new_with_arg("--output", "%(title).90s.%(ext)s")];
-    let path = PathBuf::from("~/Downloads/");
-    let ytd = YoutubeDL::new(&path, args, link)
-        .expect("you borked it dummy");
-
-    // start download
-    let download = ytd.download();
-
-    // check what the result is and print out the path to the download or the error
-    match download.result_type() {
-        ResultType::SUCCESS => println!("Your download: {}", download.output_dir().to_string_lossy()),
-        ResultType::IOERROR | ResultType::FAILURE =>
-                println!("Couldn't start download: {}", download.output()),
-    };
+async fn download_video(link: &'static &str) -> String {
+    thread::spawn(move || {
+        let args = vec![Arg::new("--quiet"), Arg::new_with_arg("--output", "%(title).90s.%(ext)s")];
+        let path = PathBuf::from("~/Downloads/");
+        let ytd = YoutubeDL::new(&path, args, link)
+            .expect("you borked it dummy");
+        // start download
+        let download = ytd.download();
+        // check what the result is and print out the path to the download or the error
+        match download.result_type() {
+            ResultType::SUCCESS => println!("Your download: {}", download.output_dir().to_string_lossy()),
+            ResultType::IOERROR | ResultType::FAILURE =>
+                    println!("Couldn't start download: {}", download.output()),
+        };
+    });
     return ("we did it :)").to_string();
 }
