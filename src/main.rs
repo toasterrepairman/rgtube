@@ -14,9 +14,18 @@ use std::io::BufReader;
 use ytd_rs::{YoutubeDL, ResultType, Arg};
 use std::path::PathBuf;
 use std::error::Error;
+use futures::prelude::*;
+use tokio::*;
+use std::{thread};
+use glib::{clone, MainContext};
 
-fn main() {
 
+#[tokio::main]
+async fn main() {
+    build_ui();
+}
+
+fn build_ui() {
     if gtk::init().is_err() {
         println!("Failed to initialize GTK.");
         return;
@@ -24,7 +33,7 @@ fn main() {
     let glade_src = include_str!("rgtube.glade");
     let builder = gtk::Builder::from_string(glade_src);
     let print_operation = gtk::PrintOperation::new();
-
+    
     // initialize widgets
     let window: gtk::Window = builder.get_object("window1").unwrap();
     let console: gtk::TextView = builder.get_object("console").unwrap();
@@ -37,16 +46,21 @@ fn main() {
     let dialog: gtk::MessageDialog = builder.get_object("messagedialog1").unwrap();
 */
 
-    button.connect_clicked(move |_| {
+    input.connect_activate(clone!(@strong input => move |_| {
         let link = input.get_text().to_string();
         download_video(&link);
-    });
+    }));
 
+
+    button.connect_clicked(clone!(@strong button => move |_| {
+        button.set_sensitive(false);
+        input.activate();
+        button.set_sensitive(true);
+    }));
+ 
 
     window.show_all();
-
     gtk::main();
-
 }
 
 async fn download_video(link: &str) -> String {

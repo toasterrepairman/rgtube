@@ -33,6 +33,7 @@
                 <property name="placeholder-text" translatable="yes">Paste link here...</property>
                 <property name="input-purpose">url</property>
                 <property name="input-hints">GTK_INPUT_HINT_NO_SPELLCHECK | GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
+                <signal name="activate" handler="gtk_main_quit" swapped="no"/>
               </object>
               <packing>
                 <property name="left-attach">1</property>
