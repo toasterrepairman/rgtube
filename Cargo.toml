@@ -11,6 +11,7 @@ ytd-rs = "0.1.4"
 futures = { version = "0.3.*" }
 tokio = {version = "1.12.0", features = ["full"] }
 glib = "0.14.8"
+dirs = "4.0.0"
 
 [dependencies.gtk]
 version = "0.9.0"
@@ -19,4 +20,3 @@ features = ["v3_16"]
 [dependencies.gio]
 version = "0.9.1"
 features = ["v2_44"]
-

@@ -15,6 +15,7 @@ use futures::prelude::*;
 use tokio::*;
 use std::{thread};
 use glib::{clone, MainContext};
+use dirs;
 
 #[tokio::main]
 async fn main() {
@@ -44,9 +45,11 @@ fn build_ui() {
 
     input.connect_activate(clone!(@strong input => move |_| {
         input.set_sensitive(false);
-        let link = input.get_text().to_string();
-        download_video(link);
-        input.set_sensitive(true)
+        let link = &input.get_text().as_str().to_string();
+        download_video(link.to_string());
+        input.set_sensitive(true);
+
+        println!("input activated!");
     }));
 
 
@@ -54,6 +57,8 @@ fn build_ui() {
         button.set_sensitive(false);
         input.activate();
         button.set_sensitive(true);
+
+        println!("button pressed!");
     }));
  
 
@@ -61,11 +66,11 @@ fn build_ui() {
     gtk::main();
 }
 
-async fn download_video(link: &'static &str) -> String {
+fn download_video(link: String) -> String {
     thread::spawn(move || {
-        let args = vec![Arg::new("--quiet"), Arg::new_with_arg("--output", "%(title).90s.%(ext)s")];
-        let path = PathBuf::from("~/Downloads/");
-        let ytd = YoutubeDL::new(&path, args, link)
+        let args = vec![Arg::new("--quiet"), Arg::new_with_arg("--output", "%(title).90s%(ext)s")];
+        let path = PathBuf::from(&dirs::download_dir().unwrap());
+        let ytd = YoutubeDL::new(&path, args, &link)
             .expect("you borked it dummy");
         // start download
         let download = ytd.download();
