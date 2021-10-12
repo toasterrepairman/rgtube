@@ -33,9 +33,10 @@ fn build_ui() {
     
     // initialize widgets
     let window: gtk::Window = builder.get_object("window1").unwrap();
-    let console: gtk::TextView = builder.get_object("console").unwrap();
     let button: gtk::Button = builder.get_object("downloadbutton").unwrap();
     let input: gtk::Entry = builder.get_object("link").unwrap();
+    let progbar: gtk::ProgressBar = builder.get_object("progress").unwrap();
+    progbar.set_fraction(0.0);
 
 /*  window mapping
 
@@ -45,10 +46,10 @@ fn build_ui() {
 
     input.connect_activate(clone!(@strong input => move |_| {
         input.set_sensitive(false);
+        progbar.pulse();
         let link = &input.get_text().as_str().to_string();
         download_video(link.to_string());
         input.set_sensitive(true);
-
         println!("input activated!");
     }));
 
@@ -64,6 +65,11 @@ fn build_ui() {
 
     window.show_all();
     gtk::main();
+}
+
+enum quality {
+    BestVideo,
+    BestAudio
 }
 
 fn download_video(link: String) -> String {
