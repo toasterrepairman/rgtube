@@ -2,6 +2,7 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkListStore" id="liststore1"/>
   <object class="GtkTextBuffer" id="textbuffer1">
     <property name="text" translatable="yes">Welcome to rgtube! Paste a link above and click the download button to begin.</property>
   </object>
@@ -158,15 +159,14 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBox">
+                  <object class="GtkComboBoxText">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-start">5</property>
-                    <property name="margin-end">5</property>
-                    <style>
-                      <class name="Toast"/>
-                      <class name="desh"/>
-                    </style>
+                    <items>
+                      <item id="audio" translatable="yes">Prefer Audio Quality</item>
+                      <item id="video" translatable="yes">Prefer Video Quality</item>
+                      <item id="storage" translatable="yes">Prefer Small Filesize (default)</item>
+                    </items>
                   </object>
                   <packing>
                     <property name="expand">False</property>

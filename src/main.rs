@@ -35,14 +35,12 @@ fn build_ui() {
     let window: gtk::Window = builder.get_object("window1").unwrap();
     let button: gtk::Button = builder.get_object("downloadbutton").unwrap();
     let input: gtk::Entry = builder.get_object("link").unwrap();
+    let combobox: gtk::ComboBoxText = builder.get_object("combobox").unwrap();
     let progbar: gtk::ProgressBar = builder.get_object("progress").unwrap();
     progbar.set_fraction(0.0);
 
-/*  window mapping
-
-    let button: gtk::Button = builder.get_object("button1").unwrap();
-    let dialog: gtk::MessageDialog = builder.get_object("messagedialog1").unwrap();
-*/
+    // set default quality
+    let mut user_quality = quality::BestStorage;
 
     input.connect_activate(clone!(@strong input => move |_| {
         input.set_sensitive(false);
@@ -63,14 +61,22 @@ fn build_ui() {
     }));
  
 
+    combobox.connect_changed(clone!(@strong combobox => move |_| {
+        let selection = combobox.get_active_id().unwrap().as_str();
+        
+        }));
+
     window.show_all();
     gtk::main();
 }
 
 enum quality {
     BestVideo,
-    BestAudio
+    BestAudio,
+    BestStorage
 }
+
+// fn select_quality(selection, )
 
 fn download_video(link: String) -> String {
     thread::spawn(move || {
